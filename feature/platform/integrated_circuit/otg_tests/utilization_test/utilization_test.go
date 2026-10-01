@@ -49,17 +49,6 @@ const (
 )
 
 var (
-	fibResource = map[ondatra.Vendor]string{
-		ondatra.ARISTA: "Routing/Resource6",
-		ondatra.NOKIA:  "ip-lpm-routes",
-		ondatra.CISCO:  "central_em_0",
-	}
-	chassisFIBResources = []string{
-		"Routing/Resource1", "Routing/Resource2", "Routing/Resource3",
-		"Routing/Resource4", "Routing/Resource5", "Routing/Resource6",
-		"Routing2/Resource1", "Routing2/Resource2", "Routing2/Resource3",
-		"Routing2/Resource4", "Routing2/Resource5", "Routing2/Resource6",
-	}
 	dutPort1 = attrs.Attributes{
 		Desc:    "dutPort1",
 		IPv4:    "192.0.2.1",
@@ -110,18 +99,32 @@ func (u *utilization) percent() uint8 {
 }
 
 func getFibResource(t *testing.T, dut *ondatra.DUTDevice) string {
+	fibResource := map[ondatra.Vendor]string{
+		ondatra.NOKIA: "ip-lpm-routes",
+		ondatra.CISCO: "central_em_0",
+	}
 	if dut.Vendor() == ondatra.ARISTA {
 		if platform := helpers.AristaPlatform(t, dut); platform == "strata" {
 			return "ALPM"
+		} else {
+			return "Routing/Resource6"
 		}
 	}
 	return fibResource[dut.Vendor()]
 }
 
 func getChassisFibResources(t *testing.T, dut *ondatra.DUTDevice) []string {
+	chassisFIBResources := []string{
+		"Routing/Resource1", "Routing/Resource2", "Routing/Resource3",
+		"Routing/Resource4", "Routing/Resource5", "Routing/Resource6",
+		"Routing2/Resource1", "Routing2/Resource2", "Routing2/Resource3",
+		"Routing2/Resource4", "Routing2/Resource5", "Routing2/Resource6",
+	}
 	if dut.Vendor() == ondatra.ARISTA {
 		if platform := helpers.AristaPlatform(t, dut); platform == "strata" {
 			return []string{"ALPM"}
+		} else {
+			return chassisFIBResources
 		}
 	}
 	return chassisFIBResources
